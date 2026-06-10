@@ -13,7 +13,7 @@ export function SectionBand({
 }) {
   return (
     <div className={cn("section-band w-full py-4 sm:py-5", className)}>
-      <h2 className="font-serif text-lg font-semibold sm:text-2xl">{title}</h2>
+      <h2 className="font-serif font-semibold leading-snug">{title}</h2>
     </div>
   );
 }

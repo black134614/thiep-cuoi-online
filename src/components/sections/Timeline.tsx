@@ -10,29 +10,25 @@ export function Timeline({ data, className }: SectionProps) {
   return (
     <section className={`section-cream py-0 ${className ?? ""}`}>
       <div className="section-band bg-transparent text-crimson">
-        <h2 className="font-serif text-lg font-semibold uppercase tracking-[0.25em] sm:text-2xl">
+        <h2 className="font-serif text-sm font-semibold uppercase tracking-[0.12em] sm:text-2xl sm:tracking-[0.25em]">
           Lịch trình ngày cưới
         </h2>
       </div>
-      <Container className="py-10 sm:py-14">
-        <RevealOnScroll>
-          <div className="relative mx-auto max-w-md">
-            {/* Một đường dọc liền mạch, căn đúng tâm chấm tròn */}
-            <div
-              aria-hidden
-              className="timeline-line"
-            />
+      <Container className="py-8 sm:py-14">
+        <RevealOnScroll variant="blur-up">
+          <div className="relative mx-auto max-w-md px-1">
+            <div aria-hidden className="timeline-line" />
             <ul className="relative">
               {schedule.map((item, i) => (
-                <li key={i} className="flex items-center py-5">
-                  <span className="flex-1 pr-6 text-right font-serif text-base text-crimson">
+                <li key={i} className="flex items-center py-3.5 sm:py-5">
+                  <span className="min-w-0 flex-1 pr-2 text-right font-serif text-sm text-crimson sm:pr-6 sm:text-base">
                     {item.time}
                   </span>
                   <span
                     aria-hidden
                     className="relative z-10 h-2.5 w-2.5 shrink-0 rounded-full bg-wine ring-[3px] ring-cream"
                   />
-                  <span className="flex-1 pl-6 text-left font-serif text-base text-ink/80">
+                  <span className="min-w-0 flex-1 break-words pl-2 text-left font-serif text-sm text-ink/80 sm:pl-6 sm:text-base">
                     {item.activity}
                   </span>
                 </li>

@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 
 /** Ký tự Song Hỷ 囍 đơn lẻ */
@@ -12,39 +14,59 @@ export function DoubleHappiness({ className }: { className?: string }) {
   );
 }
 
-/** Nền rải chữ Hỷ vàng kim, có animation float */
-export function DoubleHappinessField({ className }: { className?: string }) {
-  const items = [
-    { top: "5%", left: "8%", size: "text-3xl", opacity: "opacity-15", delay: "0s" },
-    { top: "12%", left: "82%", size: "text-2xl", opacity: "opacity-10", delay: "1s" },
-    { top: "28%", left: "15%", size: "text-4xl", opacity: "opacity-12", delay: "2s" },
-    { top: "35%", left: "90%", size: "text-3xl", opacity: "opacity-18", delay: "0.5s" },
-    { top: "55%", left: "5%", size: "text-5xl", opacity: "opacity-[0.08]", delay: "1.5s" },
-    { top: "62%", left: "88%", size: "text-4xl", opacity: "opacity-15", delay: "2.5s" },
-    { top: "78%", left: "20%", size: "text-2xl", opacity: "opacity-12", delay: "0.8s" },
-    { top: "85%", left: "75%", size: "text-3xl", opacity: "opacity-10", delay: "1.8s" },
-    { top: "45%", left: "50%", size: "text-6xl", opacity: "opacity-[0.05]", delay: "3s" },
-    { top: "92%", left: "45%", size: "text-2xl", opacity: "opacity-12", delay: "2.2s" },
-    { top: "18%", left: "55%", size: "text-xl", opacity: "opacity-[0.08]", delay: "1.2s" },
-    { top: "70%", left: "60%", size: "text-3xl", opacity: "opacity-10", delay: "0.3s" },
-  ];
+const STREAM_COUNT = 16;
+const BASE_DURATION = 14;
+
+const SIZES = ["text-xl", "text-2xl", "text-3xl", "text-4xl"] as const;
+const GLOWS = ["hy-glow-sm", "hy-glow-md", "hy-glow-lg"] as const;
+
+/** Luồng chữ Hỷ — delay trải đều, spawn dưới viewport */
+const STREAM_ITEMS = Array.from({ length: STREAM_COUNT }, (_, i) => {
+  const duration = BASE_DURATION + (i % 4) * 1.5;
+  return {
+    left: `${6 + ((i * 23 + 13) % 82)}%`,
+    size: SIZES[i % SIZES.length],
+    glow: GLOWS[i % GLOWS.length],
+    delay: (i / STREAM_COUNT) * duration,
+    duration,
+  };
+});
+
+interface DoubleHappinessFieldProps {
+  className?: string;
+  active?: boolean;
+  /** Đang mở thiệp — ẩn toàn bộ luồng chữ ngay lập tức */
+  isOpening?: boolean;
+}
+
+/** Nền chữ Hỷ vàng kim bay lên liên tục từ dưới màn hình (ẩn cho đến khi bay vào) */
+export function DoubleHappinessField({
+  className,
+  active = true,
+  isOpening = false,
+}: DoubleHappinessFieldProps) {
+  if (!active || isOpening) return null;
 
   return (
-    <div className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}>
-      {items.map((it, i) => (
+    <div
+      className={cn(
+        "hy-stream-field pointer-events-none absolute inset-0",
+        className,
+      )}
+    >
+      {STREAM_ITEMS.map((it, i) => (
         <span
           key={i}
           aria-hidden
           className={cn(
-            "absolute animate-float select-none text-gold",
+            "hy-stream-char absolute bottom-0 select-none font-serif text-gold/90 will-change-transform",
             it.size,
-            it.opacity,
+            it.glow,
           )}
           style={{
-            top: it.top,
             left: it.left,
-            animationDelay: it.delay,
-            animationDuration: `${4 + (i % 3)}s`,
+            ["--hy-dur" as string]: `${it.duration}s`,
+            ["--hy-delay" as string]: `${it.delay}s`,
           }}
         >
           囍

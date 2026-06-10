@@ -13,7 +13,7 @@ export function DateDisplay({ date }: { date: WeddingDate }) {
           Tháng {date.month}
         </span>
       </div>
-      <p className="mt-2 font-serif text-xl text-crimson">{date.year}</p>
+      <p className="mt-2 font-display text-xl text-crimson">{date.year}</p>
       {date.lunar && (
         <p className="mt-1 font-serif text-sm text-ink/60">({date.lunar})</p>
       )}

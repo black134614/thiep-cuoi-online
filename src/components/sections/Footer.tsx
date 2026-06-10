@@ -19,7 +19,7 @@ export function Footer({ data, className }: SectionProps) {
 
         <RevealOnScroll delay={100}>
           <OrnamentDivider className="my-6 [&_span]:text-gold/60 [&_span:first-child]:bg-gold/30 [&_span:last-child]:bg-gold/30" />
-          <h1 className="font-display text-3xl text-crimson sm:text-4xl">
+          <h1 className="font-display text-[clamp(1.5rem,6vw,2.25rem)] text-crimson">
             {groom.shortName} &amp; {bride.shortName}
           </h1>
           <p className="mt-2 font-serif tracking-[0.3em] text-ink/60">Thân Mời</p>

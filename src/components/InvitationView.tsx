@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import type { WeddingData } from "@/types/wedding";
 import { MusicToggle } from "@/components/ui/MusicToggle";
+import { LoadingScreen } from "@/components/sections/LoadingScreen";
 import { CoverScreen } from "@/components/sections/CoverScreen";
+import { WelcomeHero } from "@/components/sections/WelcomeHero";
 import { WeddingInfo } from "@/components/sections/WeddingInfo";
 import { Gallery } from "@/components/sections/Gallery";
 import { ReceptionInfo } from "@/components/sections/ReceptionInfo";
@@ -15,36 +17,81 @@ import { GiftEnvelope } from "@/components/sections/GiftEnvelope";
 import { Footer } from "@/components/sections/Footer";
 import { cn } from "@/lib/utils";
 
+type Phase = "loading" | "cover" | "opening" | "content";
+
+const LOADING_MS = 2400;
+const OPEN_REVEAL_MS = 900;
+const COVER_UNMOUNT_MS = 1800;
+
 export function InvitationView({ data }: { data: WeddingData }) {
-  const [opened, setOpened] = useState(false);
-  const [coverVisible, setCoverVisible] = useState(true);
+  const [phase, setPhase] = useState<Phase>("loading");
+  const [loadingExiting, setLoadingExiting] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
 
   useEffect(() => {
-    document.body.style.overflow = coverVisible ? "hidden" : "";
+    const exitTimer = setTimeout(() => setLoadingExiting(true), LOADING_MS - 600);
+    const coverTimer = setTimeout(() => setPhase("cover"), LOADING_MS);
+    return () => {
+      clearTimeout(exitTimer);
+      clearTimeout(coverTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    const locked = phase !== "content";
+    document.body.style.overflow = locked ? "hidden" : "";
+    document.body.classList.toggle("invitation-locked", locked);
     return () => {
       document.body.style.overflow = "";
+      document.body.classList.remove("invitation-locked");
     };
-  }, [coverVisible]);
+  }, [phase]);
+
+  const [coverMounted, setCoverMounted] = useState(false);
+
+  useEffect(() => {
+    if (phase === "cover") setCoverMounted(true);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "content") return;
+    const t = setTimeout(() => setCoverMounted(false), COVER_UNMOUNT_MS);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   const handleOpen = () => {
-    setOpened(true);
+    if (phase !== "cover") return;
+    setPhase("opening");
     setMusicOn(true);
-    setTimeout(() => setCoverVisible(false), 900);
+    setTimeout(() => setPhase("content"), OPEN_REVEAL_MS);
   };
+
+  const isCoverExiting = phase === "opening" || phase === "content";
 
   return (
     <>
-      {coverVisible && (
-        <CoverScreen data={data} onOpen={handleOpen} isOpened={opened} />
+      {phase === "loading" && (
+        <LoadingScreen data={data} exiting={loadingExiting} />
+      )}
+
+      {coverMounted && (
+        <CoverScreen
+          data={data}
+          onOpen={handleOpen}
+          isOpening={isCoverExiting}
+        />
       )}
 
       <main
         className={cn(
-          "invitation-shell min-h-screen transition-opacity duration-700",
-          opened ? "opacity-100" : "pointer-events-none opacity-0",
+          "invitation-shell min-h-screen",
+          phase === "content"
+            ? "animate-reveal-shell"
+            : "invisible fixed inset-0 opacity-0",
         )}
+        aria-hidden={phase !== "content"}
       >
+        <WelcomeHero data={data} />
         <WeddingInfo data={data} />
         <Gallery data={data} />
         <ReceptionInfo data={data} />
@@ -56,7 +103,7 @@ export function InvitationView({ data }: { data: WeddingData }) {
         <Footer data={data} />
       </main>
 
-      {opened && data.theme.music && (
+      {phase === "content" && data.theme.music && (
         <MusicToggle src={data.theme.music} autoPlay={musicOn} />
       )}
     </>

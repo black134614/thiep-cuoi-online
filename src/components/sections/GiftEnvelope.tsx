@@ -8,13 +8,15 @@ import { cn } from "@/lib/utils";
 import type { SectionProps } from "@/types/wedding";
 
 const COINS = [
-  { top: "10%", left: "15%", delay: "0s" },
-  { top: "20%", right: "10%", delay: "0.8s" },
-  { top: "60%", left: "8%", delay: "1.5s" },
-  { top: "70%", right: "15%", delay: "0.4s" },
-  { bottom: "15%", left: "25%", delay: "2s" },
-  { bottom: "20%", right: "20%", delay: "1.2s" },
+  { top: "8%", left: "12%", delay: "0s" },
+  { top: "18%", right: "8%", delay: "0.8s" },
+  { top: "55%", left: "5%", delay: "1.5s" },
+  { top: "65%", right: "12%", delay: "0.4s" },
+  { bottom: "12%", left: "20%", delay: "2s" },
+  { bottom: "18%", right: "18%", delay: "1.2s" },
 ];
+
+const CORNERS = ["tl", "tr", "bl", "br"] as const;
 
 export function GiftEnvelope({ data, className }: SectionProps) {
   const { giftAccounts } = data;
@@ -41,20 +43,21 @@ export function GiftEnvelope({ data, className }: SectionProps) {
 
   return (
     <section className={`section-cream py-10 text-center sm:py-14 ${className ?? ""}`}>
-      <RevealOnScroll>
-        <h2 className="font-serif text-2xl text-gold-dark">Phong Bao Mừng Cưới</h2>
+      <RevealOnScroll variant="blur-up">
+        <h2 className="font-serif text-lg font-semibold uppercase tracking-[0.2em] text-gold-dark sm:text-xl">
+          Phong Bao Mừng Cưới
+        </h2>
       </RevealOnScroll>
 
       <Container className="py-8">
         {!open ? (
-          <RevealOnScroll delay={100}>
-            <div className="relative mx-auto h-64 w-52">
-              {/* Đồng xu bay */}
+          <RevealOnScroll variant="fade-scale" delay={100}>
+            <div className="relative mx-auto h-[17rem] w-56 sm:h-72 sm:w-60">
               {COINS.map((c, i) => (
                 <span
                   key={i}
                   aria-hidden
-                  className="absolute animate-coin-float text-2xl text-gold"
+                  className="absolute animate-coin-float text-2xl text-gold drop-shadow-[0_0_6px_rgba(201,162,75,0.6)]"
                   style={{
                     top: c.top,
                     left: c.left,
@@ -70,33 +73,27 @@ export function GiftEnvelope({ data, className }: SectionProps) {
               <button
                 onClick={handleOpen}
                 className={cn(
-                  "relative z-10 mx-auto flex h-full w-full flex-col items-center justify-center rounded-xl shadow-xl transition-transform hover:scale-105",
+                  "gift-envelope relative z-10 mx-auto flex h-full w-full flex-col items-center justify-center transition-transform hover:scale-[1.02]",
                   closing && "animate-envelope-open",
                 )}
-                style={{
-                  background: "linear-gradient(160deg, #b00000 0%, #8b0000 100%)",
-                  border: "2px solid rgba(201,162,75,0.5)",
-                }}
               >
-                {/* Góc trang trí */}
-                <span className="absolute left-2 top-2 text-gold/40">✦</span>
-                <span className="absolute right-2 top-2 text-gold/40">✦</span>
-                <span className="absolute bottom-2 left-2 text-gold/40">✦</span>
-                <span className="absolute bottom-2 right-2 text-gold/40">✦</span>
+                {CORNERS.map((c) => (
+                  <span key={c} className={`gift-envelope__corner gift-envelope__corner--${c}`} />
+                ))}
 
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gold/20 ring-2 ring-gold/50">
-                  <span className="font-serif text-4xl text-gold">囍</span>
+                <div className="gift-envelope__seal">
+                  <span className="font-serif text-4xl text-wine sm:text-5xl">囍</span>
                 </div>
-                <span className="mt-4 text-xs tracking-wider text-cream-btn/80">
-                  Nhấn để mở
-                </span>
               </button>
+
+              <p className="mt-4 font-sans text-xs tracking-wider text-ink/45">
+                Nhấn để mở
+              </p>
             </div>
           </RevealOnScroll>
         ) : (
-          <RevealOnScroll>
-            {/* Tab chú rể / cô dâu */}
-            <div className="mb-6 flex justify-center gap-3">
+          <RevealOnScroll variant="fade-up">
+            <div className="mb-6 flex flex-wrap justify-center gap-2 sm:gap-3">
               {giftAccounts.map((acc, i) => (
                 <button
                   key={i}
@@ -114,14 +111,14 @@ export function GiftEnvelope({ data, className }: SectionProps) {
             </div>
 
             {active && (
-              <div className="mx-auto max-w-sm rounded-2xl bg-cream-light p-6 shadow-lg">
+              <div className="mx-auto max-w-sm rounded-2xl border border-gold/20 bg-cream-light p-6 shadow-lg">
                 <p className="font-serif text-lg font-semibold text-crimson">
                   {active.bankName}
                 </p>
-                <p className="mt-3 font-mono text-xl tracking-wider text-ink">
+                <p className="mt-3 break-all font-mono text-base tracking-wider text-ink sm:text-xl">
                   {active.accountNumber}
                 </p>
-                <p className="mt-1 text-sm text-ink/60">{active.accountHolder}</p>
+                <p className="mt-1 font-serif text-sm text-ink/60">{active.accountHolder}</p>
 
                 {active.qrImage && (
                   <div className="relative mx-auto mt-4 h-40 w-40">

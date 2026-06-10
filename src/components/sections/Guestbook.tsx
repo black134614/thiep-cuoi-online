@@ -57,7 +57,7 @@ export function Guestbook({ className }: SectionProps) {
         <RevealOnScroll>
           <form
             onSubmit={handleSubmit}
-            className="mx-auto max-w-lg space-y-4 rounded-2xl bg-cream-light p-6 shadow-md"
+            className="mx-auto w-full max-w-lg space-y-4 rounded-2xl bg-cream-light p-4 shadow-md sm:p-6"
           >
             <input
               value={name}

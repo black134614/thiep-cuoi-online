@@ -43,35 +43,34 @@ export function Countdown({ data, className }: SectionProps) {
   const day = parseInt(reception.date.day, 10);
 
   return (
-    <section className={`section-cream py-10 text-center sm:py-14 ${className ?? ""}`}>
-      <RevealOnScroll>
-        <h2 className="font-serif text-xl tracking-wide text-crimson sm:text-2xl">
+    <section className={`section-cream px-4 py-8 text-center sm:py-14 ${className ?? ""}`}>
+      <RevealOnScroll variant="blur-up">
+        <h2 className="font-serif text-lg font-semibold tracking-wide text-crimson sm:text-2xl">
           Cùng đếm ngược
         </h2>
 
         {mounted && parts && !parts.isPast ? (
-          <p
-            className="mt-5 font-serif text-lg text-crimson sm:text-xl"
+          <div
+            className="mt-5 flex flex-wrap justify-center gap-x-2 gap-y-1 font-serif text-base text-crimson sm:text-xl"
             suppressHydrationWarning
           >
-            {UNITS.map((u, i) => (
-              <span key={u.key}>
-                {i > 0 && " "}
+            {UNITS.map((u) => (
+              <span key={u.key} className="whitespace-nowrap">
                 <strong>{parts[u.key]}</strong> {u.label}
               </span>
             ))}
-          </p>
+          </div>
         ) : mounted && parts?.isPast ? (
-          <p className="mt-5 font-serif text-lg text-crimson">
+          <p className="mt-5 font-serif text-base text-crimson sm:text-lg">
             Hôm nay là ngày trọng đại! 🎉
           </p>
         ) : (
-          <p className="mt-5 font-serif text-lg text-crimson">…</p>
+          <p className="mt-5 font-serif text-base text-crimson">…</p>
         )}
       </RevealOnScroll>
 
-      <RevealOnScroll delay={150}>
-        <div className="mt-8">
+      <RevealOnScroll variant="fade-scale" delay={150}>
+        <div className="mt-6 sm:mt-8">
           <MonthCalendar year={year} month={month} highlightDay={day} />
           <button
             onClick={handleAddToCalendar}

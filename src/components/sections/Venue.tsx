@@ -18,7 +18,7 @@ export function Venue({ data, className }: SectionProps) {
     <section className={`section-cream py-0 ${className ?? ""}`}>
       <SectionBand title="Tiệc cưới sẽ tổ chức tại" />
       <Container className="py-10 text-center sm:py-14">
-        <RevealOnScroll>
+        <RevealOnScroll variant="fade-up">
           <p className="font-serif text-sm leading-relaxed text-crimson">
             {reception.address}
           </p>

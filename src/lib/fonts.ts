@@ -1,31 +1,27 @@
 import {
-  Cormorant_Garamond,
+  Playfair_Display,
   EB_Garamond,
-  Dancing_Script,
+  Alex_Brush,
+  Libre_Baskerville,
   Be_Vietnam_Pro,
 } from "next/font/google";
 
 /**
- * Bộ font cho mẫu thiệp. Dùng next/font/google làm mặc định (có hỗ trợ tiếng Việt).
- *
- * Trang mẫu gốc dùng các font bản quyền local (DFVN New Eddy, Alex Brush, SVN-HC...).
- * Nếu cần khớp 100%, agent có thể:
- *   1. Copy file font vào public/fonts/
- *   2. Đổi sang next/font/local và cập nhật biến CSS bên dưới.
- *
- * Các biến CSS (--font-display, --font-serif, --font-script, --font-sans)
- * được map trong tailwind.config.ts -> fontFamily.
+ * Font mapping theo mẫu Song Hỷ Đỏ (chungdoi.com):
+ * - Fz Qellia → Playfair Display (tên cô dâu/chú rể)
+ * - Baskerville → Libre Baskerville (thứ, tháng, ÚT NAM/NỮ)
+ * - Alex Brush → ký tự "&"
+ * - EB Garamond → nội dung serif, tiêu đề section
+ * - Be Vietnam Pro → UI / body
  */
 
-// Tên cô dâu/chú rể, tiêu đề lớn (thanh lịch, nét mảnh)
-export const fontDisplay = Cormorant_Garamond({
+export const fontDisplay = Playfair_Display({
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-display",
   display: "swap",
 });
 
-// Nội dung kiểu serif (tên cha mẹ, lời mời...)
 export const fontSerif = EB_Garamond({
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600"],
@@ -33,15 +29,20 @@ export const fontSerif = EB_Garamond({
   display: "swap",
 });
 
-// Ký tự "&", chữ ký, nét viết tay
-export const fontScript = Dancing_Script({
+export const fontClassic = Libre_Baskerville({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "700"],
+  variable: "--font-classic",
+  display: "swap",
+});
+
+export const fontScript = Alex_Brush({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400"],
   variable: "--font-script",
   display: "swap",
 });
 
-// Body / UI text
 export const fontSans = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
   weight: ["300", "400", "500", "600"],
@@ -49,10 +50,10 @@ export const fontSans = Be_Vietnam_Pro({
   display: "swap",
 });
 
-/** Gộp class biến font để gắn vào <html> hoặc <body> trong layout.tsx */
 export const fontVariables = [
   fontDisplay.variable,
   fontSerif.variable,
+  fontClassic.variable,
   fontScript.variable,
   fontSans.variable,
 ].join(" ");

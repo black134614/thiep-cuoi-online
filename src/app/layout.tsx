@@ -28,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi" className={fontVariables}>
-      <body className="bg-[#e8dfd0]">{children}</body>
+      <body className="bg-[#e8dfd0] antialiased">{children}</body>
     </html>
   );
 }

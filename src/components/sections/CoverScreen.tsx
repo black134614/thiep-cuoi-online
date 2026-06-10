@@ -3,41 +3,57 @@
 import Image from "next/image";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { DoubleHappinessField } from "@/components/decor/DoubleHappiness";
+import { SparkleField } from "@/components/decor/SparkleField";
 import type { SectionProps } from "@/types/wedding";
 import { cn } from "@/lib/utils";
 
 interface CoverScreenProps extends SectionProps {
   onOpen?: () => void;
-  isOpened?: boolean;
+  isOpening?: boolean;
 }
 
-export function CoverScreen({ data, onOpen, isOpened, className }: CoverScreenProps) {
+export function CoverScreen({
+  data,
+  onOpen,
+  isOpening = false,
+  className,
+}: CoverScreenProps) {
   const { groom, bride, reception } = data;
   const monthNum = parseInt(reception.date.month, 10);
 
   return (
     <section
       className={cn(
-        "cover-gradient fixed inset-0 z-40 flex items-center justify-center transition-all duration-1000",
-        isOpened && "pointer-events-none opacity-0",
+        "cover-gradient fixed inset-0 z-40 flex items-center justify-center",
+        isOpening && "cover-exit pointer-events-none",
         className,
       )}
     >
-      <DoubleHappinessField />
+      <DoubleHappinessField isOpening={isOpening} />
+      <SparkleField intense={isOpening} />
 
-      {/* Tờ thiệp trung tâm */}
+      {isOpening && (
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+          <div className="cover-burst-ring h-[min(80vw,24rem)] w-[min(80vw,24rem)] rounded-full animate-burst-ring" />
+          <div className="absolute inset-0 bg-gradient-to-b from-gold-light/20 via-cream-btn/10 to-transparent animate-burst-flash" />
+        </div>
+      )}
+
       <div
         className={cn(
-          "relative z-10 mx-6 w-full max-w-sm transition-all duration-700",
-          isOpened && "scale-95 opacity-0",
+          "relative z-10 mx-4 w-full max-w-sm sm:mx-6",
+          isOpening ? "cover-card-exit" : "cover-card-enter",
         )}
       >
-        {/* Card đỏ với watermark chữ Hỷ */}
         <div
-          className="relative overflow-hidden rounded-2xl px-6 pb-10 pt-16 text-center shadow-2xl animate-pulse-glow"
-          style={{ background: "linear-gradient(160deg, #b00000 0%, #8b0000 50%, #6e0000 100%)" }}
+          className={cn(
+            "relative overflow-hidden rounded-2xl px-4 pb-8 pt-14 text-center shadow-2xl sm:px-6 sm:pb-10 sm:pt-16",
+            !isOpening && "animate-pulse-glow",
+          )}
+          style={{
+            background: "linear-gradient(160deg, #b00000 0%, #8b0000 50%, #6e0000 100%)",
+          }}
         >
-          {/* Watermark chữ Hỷ hai bên */}
           <span
             aria-hidden
             className="pointer-events-none absolute -left-4 top-8 select-none font-serif text-[120px] leading-none text-white/5"
@@ -51,38 +67,49 @@ export function CoverScreen({ data, onOpen, isOpened, className }: CoverScreenPr
             囍
           </span>
 
-          {/* Emblem tròn chữ Hỷ */}
-          <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-30"
+            style={{
+              background:
+                "linear-gradient(105deg, transparent 40%, rgba(255,238,210,0.15) 50%, transparent 60%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 4s linear infinite",
+            }}
+          />
+
+          <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center sm:h-24 sm:w-24">
             <Image
               src="/images/themes/song-hy-red/sunburst.svg"
               alt=""
-              width={80}
-              height={80}
-              className="absolute inset-0 opacity-90"
+              width={96}
+              height={96}
+              className="absolute inset-0 opacity-90 animate-sunburst-spin"
               aria-hidden
               priority
             />
-            <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full bg-cream-btn shadow-lg">
+            <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full bg-cream-btn shadow-lg animate-emblem-glow sm:h-16 sm:w-16">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/themes/song-hy-red/chu-hy.webp"
                 alt="Song Hỷ"
                 width={36}
                 height={36}
-                className="object-contain"
+                className="object-contain drop-shadow-[0_0_8px_rgba(201,162,75,0.6)]"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                   e.currentTarget.nextElementSibling?.classList.remove("hidden");
                 }}
               />
-              <span className="hidden font-serif text-2xl text-wine">囍</span>
+              <span className="hidden font-serif text-2xl text-wine drop-shadow-[0_0_8px_rgba(201,162,75,0.6)]">
+                囍
+              </span>
             </div>
           </div>
 
-          {/* Tên cặp đôi */}
-          <h1 className="font-display text-3xl leading-snug text-cream-btn text-shadow-glow sm:text-4xl">
+          <h1 className="font-display text-[clamp(1.5rem,6vw,2.25rem)] leading-snug text-cream-btn text-shadow-glow">
             {groom.shortName}
-            <span className="mx-2 font-script text-2xl text-gold-light">&amp;</span>
+            <span className="mx-2 font-script text-3xl text-gold-light sm:text-4xl">&amp;</span>
             {bride.shortName}
           </h1>
 
@@ -93,7 +120,14 @@ export function CoverScreen({ data, onOpen, isOpened, className }: CoverScreenPr
           </p>
           <p className="mt-2 font-serif tracking-[0.3em] text-cream-btn/80">Thân Mời</p>
 
-          <button className="btn-open-envelope mt-8" onClick={onOpen}>
+          <button
+            className={cn(
+              "btn-open-envelope mt-8 transition-opacity duration-300",
+              isOpening && "pointer-events-none opacity-0",
+            )}
+            onClick={onOpen}
+            disabled={isOpening}
+          >
             Mở thiệp
           </button>
         </div>
