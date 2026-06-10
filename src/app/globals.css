@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-wine: #800000;
+    --color-cream: #fbf1db;
+    --color-gold: #c9a24b;
+    --color-cream-btn: #ffeed2;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream text-ink font-sans antialiased;
+  }
+}
+
+@layer components {
+  .section-band {
+    @apply bg-wine text-cream-light py-4 text-center font-serif text-lg font-semibold uppercase tracking-[0.25em] sm:py-5 sm:text-2xl;
+  }
+
+  .section-cream {
+    @apply bg-cream text-ink;
+  }
+
+  .invitation-shell {
+    @apply mx-auto w-full max-w-[640px] bg-cream-light shadow-2xl;
+  }
+
+  /* Nút "Mở thiệp" kiểu pill kem, glow */
+  .btn-open-envelope {
+    @apply rounded-full px-8 py-2.5 font-serif text-sm font-semibold uppercase tracking-wider text-crimson transition-transform hover:scale-105;
+    background: var(--color-cream-btn);
+    box-shadow: 0 4px 14px rgba(255, 238, 210, 0.35);
+  }
+
+  /* Khối ngày: THỨ | 01 | THÁNG 06 */
+  .date-display {
+    @apply flex items-center justify-center text-crimson;
+  }
+  .date-display__side {
+    @apply w-[70px] whitespace-nowrap text-right font-serif text-sm uppercase text-ink/60 sm:w-[85px];
+  }
+  .date-display__side--right {
+    @apply text-left;
+  }
+  .date-display__divider {
+    @apply mx-3 h-6 w-px self-center bg-ink/40 opacity-50 sm:mx-4;
+  }
+  .date-display__day {
+    @apply font-serif text-3xl font-normal sm:text-[38px];
+  }
+
+  /* Timeline dọc */
+  .timeline-line {
+    @apply absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gold/50;
+  }
+
+  /* Carousel coverflow */
+  .gallery-slide {
+    @apply absolute transition-all duration-500 ease-out;
+    transform-style: preserve-3d;
+  }
+}
+
+@layer utilities {
+  .reveal-hidden {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  .reveal-show {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  .text-shadow-glow {
+    text-shadow: 0 0 20px rgba(255, 238, 210, 0.4);
+  }
+
+  .cover-gradient {
+    background: radial-gradient(ellipse at center, #5e0000 0%, #2b0000 55%, #1a0000 100%);
+  }
+}

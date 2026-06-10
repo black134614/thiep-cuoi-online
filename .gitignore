@@ -1,0 +1,44 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# editor / IDE local config
+.vscode/*
+!.vscode/extensions.json
+.idea
+.cursor/
+.codex/
+.gemini/
+.zed/
+.mcp.json
+config/mcporter.json
+opencode.json
+
+# Reference material đã tải về từ trang mẫu (không commit)
+/reference/
+"M?u Thi?p Song H? D? - Thi?p Cu?i Truy?n Th?ng Ch? H?.html"
