@@ -4,6 +4,7 @@ import Image from "next/image";
 import { OrnamentDivider } from "@/components/ui/OrnamentDivider";
 import { DoubleHappinessField } from "@/components/decor/DoubleHappiness";
 import { SparkleField } from "@/components/decor/SparkleField";
+import { useGuestName } from "@/components/GuestNameProvider";
 import type { SectionProps } from "@/types/wedding";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ export function CoverScreen({
   className,
 }: CoverScreenProps) {
   const { groom, bride, reception } = data;
+  const { guestName } = useGuestName();
   const monthNum = parseInt(reception.date.month, 10);
 
   return (
@@ -118,7 +120,9 @@ export function CoverScreen({
           <p className="font-serif text-base text-cream-btn/90">
             {reception.date.day} tháng {monthNum}, {reception.date.year}
           </p>
-          <p className="mt-2 font-serif tracking-[0.3em] text-cream-btn/80">Thân Mời</p>
+          <p className="mt-2 font-serif tracking-[0.3em] text-cream-btn/80">
+            {guestName ? `Thân mời ${guestName}` : "Thân Mời"}
+          </p>
 
           <button
             className={cn(

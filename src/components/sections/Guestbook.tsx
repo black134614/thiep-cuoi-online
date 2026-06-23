@@ -5,15 +5,21 @@ import { Container } from "@/components/ui/Container";
 import { SectionBand } from "@/components/ui/SectionBand";
 import { Button } from "@/components/ui/Button";
 import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
+import { useGuestName } from "@/components/GuestNameProvider";
 import type { SectionProps, Wish } from "@/types/wedding";
 
 export function Guestbook({ className }: SectionProps) {
+  const { guestName } = useGuestName();
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [wishes, setWishes] = useState<Wish[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (guestName) setName(guestName);
+  }, [guestName]);
 
   useEffect(() => {
     setLoading(true);
@@ -36,13 +42,17 @@ export function Guestbook({ className }: SectionProps) {
       const res = await fetch("/api/wishes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), message: message.trim() }),
+        body: JSON.stringify({
+          name: name.trim(),
+          message: message.trim(),
+          invitedAs: guestName ?? undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setWishes((prev) => [data.wish, ...prev]);
-      setName("");
       setMessage("");
+      if (!guestName) setName("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gửi thất bại.");
     } finally {
@@ -54,6 +64,12 @@ export function Guestbook({ className }: SectionProps) {
     <section className={`section-cream py-0 ${className ?? ""}`}>
       <SectionBand title="Sổ lưu bút" />
       <Container className="py-10 sm:py-14">
+        {guestName && (
+          <p className="mb-4 text-center font-serif text-sm text-crimson">
+            Gửi lời chúc với tư cách{" "}
+            <span className="font-semibold">{guestName}</span>
+          </p>
+        )}
         <RevealOnScroll>
           <form
             onSubmit={handleSubmit}
@@ -98,6 +114,11 @@ export function Guestbook({ className }: SectionProps) {
                     <p className="font-serif font-semibold text-crimson">
                       {w.name}
                     </p>
+                    {w.invitedAs && (
+                      <p className="mt-0.5 text-xs text-ink/50">
+                        Khách mời: {w.invitedAs}
+                      </p>
+                    )}
                     <p className="mt-1 text-sm leading-relaxed text-ink/70">
                       {w.message}
                     </p>

@@ -1,16 +1,27 @@
+"use client";
+
 import { Container } from "@/components/ui/Container";
 import { SectionBand } from "@/components/ui/SectionBand";
 import { DateDisplay } from "@/components/ui/DateDisplay";
 import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
+import { useGuestName } from "@/components/GuestNameProvider";
 import type { SectionProps } from "@/types/wedding";
 
 export function WeddingInfo({ data, className }: SectionProps) {
   const { groom, bride, groomParents, brideParents, ceremony } = data;
+  const { guestName } = useGuestName();
 
   return (
     <section className={`section-cream py-0 ${className ?? ""}`}>
       <SectionBand title="Thông tin lễ cưới" />
       <Container className="py-10 text-center sm:py-14">
+        {guestName && (
+          <RevealOnScroll variant="fade-up">
+            <p className="mb-8 font-serif text-base text-crimson">
+              Kính mời <span className="font-semibold">{guestName}</span> đến dự lễ thành hôn
+            </p>
+          </RevealOnScroll>
+        )}
         <RevealOnScroll variant="fade-up">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
             {[groomParents, brideParents].map((p, i) => (

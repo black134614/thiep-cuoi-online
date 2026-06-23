@@ -1,10 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
+import { useGuestName } from "@/components/GuestNameProvider";
 import type { SectionProps } from "@/types/wedding";
 
 /** Hero đầu trang — vòm đỏ, welcome, ảnh cung, tên hai bên (mẫu Song Hỷ Đỏ) */
 export function WelcomeHero({ data, className }: SectionProps) {
   const { groom, bride, welcomeText } = data;
+  const { guestName } = useGuestName();
   const photo = groom.photo ?? bride.photo;
 
   return (
@@ -13,6 +17,14 @@ export function WelcomeHero({ data, className }: SectionProps) {
       <div className="welcome-hero__dome" aria-hidden />
 
       <div className="relative z-10 px-4 pt-10 text-center sm:pt-12">
+        {guestName && (
+          <RevealOnScroll variant="blur-up">
+            <p className="mb-4 font-serif text-sm text-cream-light/95 sm:text-base">
+              Trân trọng kính mời{" "}
+              <span className="font-semibold text-gold-light">{guestName}</span>
+            </p>
+          </RevealOnScroll>
+        )}
         <RevealOnScroll variant="blur-up">
           <p className="font-classic text-[0.65rem] uppercase tracking-[0.45em] text-cream-light/95 sm:text-xs">
             {welcomeText ?? "Welcome to our wedding"}

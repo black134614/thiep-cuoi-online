@@ -40,6 +40,7 @@ export function GiftEnvelope({ data, className }: SectionProps) {
   };
 
   const active = giftAccounts[activeTab];
+  const showTabs = giftAccounts.length > 1;
 
   return (
     <section className={`section-cream py-10 text-center sm:py-14 ${className ?? ""}`}>
@@ -93,35 +94,49 @@ export function GiftEnvelope({ data, className }: SectionProps) {
           </RevealOnScroll>
         ) : (
           <RevealOnScroll variant="fade-up">
-            <div className="mb-6 flex flex-wrap justify-center gap-2 sm:gap-3">
-              {giftAccounts.map((acc, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveTab(i)}
-                  className={cn(
-                    "rounded-full px-5 py-2 font-serif text-sm transition",
-                    i === activeTab
-                      ? "bg-wine text-cream-light"
-                      : "bg-cream-dark text-ink/60 hover:bg-gold/20",
-                  )}
-                >
-                  {acc.owner}
-                </button>
-              ))}
-            </div>
+            {showTabs && (
+              <div className="mb-6 flex flex-wrap justify-center gap-2 sm:gap-3">
+                {giftAccounts.map((acc, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveTab(i)}
+                    className={cn(
+                      "rounded-full px-5 py-2 font-serif text-sm transition",
+                      i === activeTab
+                        ? "bg-wine text-cream-light"
+                        : "bg-cream-dark text-ink/60 hover:bg-gold/20",
+                    )}
+                  >
+                    {acc.owner}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {active && (
               <div className="mx-auto max-w-sm rounded-2xl border border-gold/20 bg-cream-light p-6 shadow-lg">
-                <p className="font-serif text-lg font-semibold text-crimson">
-                  {active.bankName}
-                </p>
-                <p className="mt-3 break-all font-mono text-base tracking-wider text-ink sm:text-xl">
-                  {active.accountNumber}
-                </p>
-                <p className="mt-1 font-serif text-sm text-ink/60">{active.accountHolder}</p>
+                {active.bankName && (
+                  <p className="font-serif text-lg font-semibold text-crimson">
+                    {active.bankName}
+                  </p>
+                )}
+
+                {active.accountNumber && (
+                  <p className="mt-3 break-all font-mono text-base tracking-wider text-ink sm:text-xl">
+                    {active.accountNumber}
+                  </p>
+                )}
+                {active.accountHolder && (
+                  <p className="mt-1 font-serif text-sm text-ink/60">{active.accountHolder}</p>
+                )}
 
                 {active.qrImage && (
-                  <div className="relative mx-auto mt-4 h-40 w-40">
+                  <div
+                    className={cn(
+                      "relative mx-auto",
+                      active.accountNumber ? "mt-4 h-40 w-40" : "mt-2 h-52 w-52",
+                    )}
+                  >
                     <Image
                       src={active.qrImage}
                       alt={`QR ${active.owner}`}
@@ -134,12 +149,14 @@ export function GiftEnvelope({ data, className }: SectionProps) {
                   </div>
                 )}
 
-                <button
-                  onClick={() => copyAccount(active.accountNumber ?? "")}
-                  className="mt-4 rounded-full bg-wine px-6 py-2 font-serif text-sm text-cream-light transition hover:bg-wine-dark"
-                >
-                  {copied ? "Đã sao chép!" : "Sao chép STK"}
-                </button>
+                {active.accountNumber && (
+                  <button
+                    onClick={() => copyAccount(active.accountNumber ?? "")}
+                    className="mt-4 rounded-full bg-wine px-6 py-2 font-serif text-sm text-cream-light transition hover:bg-wine-dark"
+                  >
+                    {copied ? "Đã sao chép!" : "Sao chép STK"}
+                  </button>
+                )}
               </div>
             )}
           </RevealOnScroll>

@@ -1,95 +1,121 @@
 import type { WeddingData } from "@/types/wedding";
 
+const VENUE_ADDRESS =
+  "Ấp Phước An, Phước Vinh, Châu Thành, Tây Ninh";
+
+const MAP_EMBED_URL =
+  "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d244.44596407737953!2d105.94639148713959!3d11.397720471922826!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e0!3m2!1sen!2s!4v1782176408743!5m2!1sen!2s";
+
+const MAP_OPEN_URL =
+  "https://www.google.com/maps/search/?api=1&query=11.397720471922826,105.94639148713959";
+
+const ALBUM_FILES = [
+  "DSC01851.jpg",
+  "DSC01892.jpg",
+  "DSC01912.jpg",
+  "DSC01917.jpg",
+  "DSC01941.jpg",
+  "DSC01946.jpg",
+  "DSC02077.jpg",
+  "DSC02095.jpg",
+  "DSC02130.jpg",
+  "DSC02172.jpg",
+  "DSC02186.jpg",
+  "DSC02221.jpg",
+  "DSC02234.jpg",
+  "DSC02256.jpg",
+  "DSC02265.jpg",
+  "DSC02267_(2).jpg",
+  "DSC02305.jpg",
+  "DSC02341.jpg",
+  "DSC02345.jpg",
+  "DSC02367.jpg",
+  "DSC02380.jpg",
+  "DSC02415.jpg",
+  "DSC02421.jpg",
+  "DSC02531.jpg",
+  "DSC02557.jpg",
+] as const;
+
+const HERO_PHOTO = `/images/Album/${ALBUM_FILES[0]}`;
+
 export const weddingData: WeddingData = {
   welcomeText: "Welcome to our wedding",
 
   groom: {
-    fullName: "Phan Gia Khánh",
-    shortName: "Gia Khánh",
-    title: "Út Nam",
-    photo: "https://cdn.chungdoi.com/uploads/c02e1621-d290-41cd-acf7-fbeb6d1847a8.jpg",
+    fullName: "Trần Văn Mẫn",
+    shortName: "Văn Mẫn",
+    title: "Chú rể",
+    photo: HERO_PHOTO,
   },
   bride: {
-    fullName: "Phạm Quỳnh Anh",
-    shortName: "Quỳnh Anh",
-    title: "Út Nữ",
-    photo: "https://cdn.chungdoi.com/uploads/c02e1621-d290-41cd-acf7-fbeb6d1847a8.jpg",
+    fullName: "Trần Hồng Ngân",
+    shortName: "Hồng Ngân",
+    title: "Cô dâu",
+    photo: HERO_PHOTO,
   },
 
   groomParents: {
     prefix: "Ông Bà",
-    father: "Phan Văn Hoàng",
-    mother: "Lê Thị Mai",
-    address: "Số 85 Nguyễn Thái Sơn, Phường 4, Gò Vấp, TP. Hồ Chí Minh",
+    father: "Trần Văn Minh",
+    mother: "Nguyễn Thị Giàu",
+    address: VENUE_ADDRESS,
   },
   brideParents: {
     prefix: "Ông Bà",
-    father: "Phạm Văn Mạnh",
-    mother: "Huỳnh Thị Kim Oanh",
-    address: "Ngõ 95 Láng Hạ, Láng Hạ, Đống Đa, Hà Nội",
+    father: "Trần Hồng Điệp",
+    mother: "Nguyễn Thị Hà",
+    address: "Ấp 6, xã Tân Thành, Tây Ninh",
   },
 
   ceremony: {
     label: "Lễ Thành Hôn",
     venueName: "Tư Gia",
+    address: VENUE_ADDRESS,
     date: {
-      iso: "2026-06-01T09:00:00+07:00",
-      weekday: "Thứ Hai",
-      day: "01",
-      month: "06",
+      iso: "2026-08-23T09:00:00+07:00",
+      weekday: "Chủ Nhật",
+      day: "23",
+      month: "08",
       year: "2026",
       time: "09:00",
-      lunar: "Tức ngày 16/04 năm Bính Ngọ",
+      lunar: "Tức ngày 11/07 năm Bính Ngọ",
     },
   },
 
   reception: {
     label: "Tiệc Cưới",
-    venueName: "Trung Tâm Hội Nghị Tiệc Cưới Sun Palace",
-    address: "Sun Palace, 170 Kinh Dương Vương, Phường 13, Quận 6, Hồ Chí Minh",
+    venueName: "Tư Gia",
+    address: VENUE_ADDRESS,
     date: {
-      iso: "2026-06-14T10:30:00+07:00",
+      iso: "2026-08-23T10:30:00+07:00",
       weekday: "Chủ Nhật",
-      day: "14",
-      month: "06",
+      day: "23",
+      month: "08",
       year: "2026",
       time: "10:30",
-      lunar: "Tức ngày 29/04 năm Bính Ngọ",
+      lunar: "Tức ngày 11/07 năm Bính Ngọ",
     },
-    mapUrl:
-      "https://www.google.com/maps/search/?api=1&query=Sun+Palace+170+Kinh+Duong+Vuong+Quan+6",
-    coordinates: { lat: 10.7459, lng: 106.6298 },
+    mapUrl: MAP_OPEN_URL,
+    mapEmbedUrl: MAP_EMBED_URL,
+    coordinates: { lat: 11.397720471922826, lng: 105.94639148713959 },
   },
 
   schedule: [
-    { time: "17:30", activity: "Đón khách" },
-    { time: "18:30", activity: "Khai tiệc" },
-    { time: "18:45", activity: "Rót rượu, cắt bánh" },
-    { time: "19:00", activity: "Phục vụ món chính" },
-    { time: "21:00", activity: "Kết thúc tiệc" },
+    { time: "09:00", activity: "Đón khách" },
+    { time: "10:30", activity: "Khai tiệc" },
   ],
 
-  gallery: [
-    { src: "https://cdn.chungdoi.com/uploads/8ac4c9ca-3642-4870-9ef4-d559c3255672.jpg", alt: "Ảnh cưới 1" },
-    { src: "https://cdn.chungdoi.com/uploads/4a9236f5-0335-4ed2-b5e4-c7a12af7a59f.jpg", alt: "Ảnh cưới 2" },
-    { src: "https://cdn.chungdoi.com/uploads/65527b43-885b-401f-bbbf-ce4d5c6fe39d.jpg", alt: "Ảnh cưới 3" },
-    { src: "https://cdn.chungdoi.com/uploads/685fc899-3e8d-4ae7-8074-624034297969.jpg", alt: "Ảnh cưới 4" },
-    { src: "https://cdn.chungdoi.com/uploads/eb68249e-6e45-4452-8c3b-b7076b462c0b.jpg", alt: "Ảnh cưới 5" },
-    { src: "https://cdn.chungdoi.com/uploads/25e2ccda-823e-459e-ad42-5d033ab080b7.jpg", alt: "Ảnh cưới 6" },
-  ],
+  gallery: ALBUM_FILES.map((file, i) => ({
+    src: `/images/Album/${file}`,
+    alt: `Ảnh cưới ${i + 1}`,
+  })),
 
   giftAccounts: [
     {
       owner: "Chú rể",
-      bankName: "Vietcombank",
-      accountNumber: "0123456789",
-      accountHolder: "PHAN GIA KHANH",
-    },
-    {
-      owner: "Cô dâu",
       bankName: "Techcombank",
-      accountNumber: "9876543210",
-      accountHolder: "PHAM QUYNH ANH",
+      qrImage: "/images/QR_code.png",
     },
   ],
 
@@ -97,6 +123,6 @@ export const weddingData: WeddingData = {
 
   theme: {
     template: "song-hy-do",
-    music: undefined,
+    music: "/Theme_music.mp3",
   },
 };

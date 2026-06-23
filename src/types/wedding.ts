@@ -60,6 +60,8 @@ export interface WeddingEvent {
   date: WeddingDate;
   /** Link Google Maps (embed hoặc share) */
   mapUrl?: string;
+  /** iframe src trực tiếp từ Google Maps embed */
+  mapEmbedUrl?: string;
   /** Toạ độ để render bản đồ tùy chọn */
   coordinates?: { lat: number; lng: number };
 }
@@ -94,6 +96,8 @@ export interface Wish {
   id: string;
   name: string;
   message: string;
+  /** Tên người nhận thiệp lúc gửi lời chúc */
+  invitedAs?: string;
   /** ISO timestamp */
   createdAt: string;
 }

@@ -6,13 +6,15 @@ import type { SectionProps } from "@/types/wedding";
 
 export function Venue({ data, className }: SectionProps) {
   const { reception } = data;
-  const { coordinates } = reception;
+  const { coordinates, mapEmbedUrl } = reception;
 
-  const mapEmbedUrl = coordinates
-    ? `https://maps.google.com/maps?q=${coordinates.lat},${coordinates.lng}&z=15&output=embed`
-    : reception.mapUrl
-      ? `https://maps.google.com/maps?q=${encodeURIComponent(reception.address ?? reception.venueName)}&z=15&output=embed`
-      : null;
+  const mapIframeSrc =
+    mapEmbedUrl ??
+    (coordinates
+      ? `https://maps.google.com/maps?q=${coordinates.lat},${coordinates.lng}&z=15&output=embed`
+      : reception.mapUrl
+        ? `https://maps.google.com/maps?q=${encodeURIComponent(reception.address ?? reception.venueName)}&z=15&output=embed`
+        : null);
 
   return (
     <section className={`section-cream py-0 ${className ?? ""}`}>
@@ -25,10 +27,10 @@ export function Venue({ data, className }: SectionProps) {
         </RevealOnScroll>
 
         <RevealOnScroll delay={100}>
-          {mapEmbedUrl && (
+          {mapIframeSrc && (
             <div className="mt-6 overflow-hidden rounded-lg border border-ink/10 shadow-md">
               <iframe
-                src={mapEmbedUrl}
+                src={mapIframeSrc}
                 title="Bản đồ địa điểm tiệc cưới"
                 className="aspect-video w-full"
                 loading="lazy"
