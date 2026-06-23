@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import type { WeddingData } from "@/types/wedding";
-import { GuestNameProvider, useGuestName } from "@/components/GuestNameProvider";
+import { GuestNameProvider } from "@/components/GuestNameProvider";
+import { MusicProvider, useMusicOptional } from "@/components/MusicProvider";
 import { MusicToggle } from "@/components/ui/MusicToggle";
-import { GuestNamePicker } from "@/components/ui/GuestNamePicker";
-import { GuestNameBar } from "@/components/ui/GuestNameBar";
+import { MusicReactiveAmbience } from "@/components/decor/MusicReactiveAmbience";
 import { LoadingScreen } from "@/components/sections/LoadingScreen";
 import { CoverScreen } from "@/components/sections/CoverScreen";
 import { WelcomeHero } from "@/components/sections/WelcomeHero";
@@ -26,11 +26,15 @@ const LOADING_MS = 2400;
 const OPEN_REVEAL_MS = 900;
 const COVER_UNMOUNT_MS = 1800;
 
-function InvitationViewInner({ data }: { data: WeddingData }) {
+function InvitationViewInner({
+  data,
+  onStartMusic,
+}: {
+  data: WeddingData;
+  onStartMusic: () => void;
+}) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [loadingExiting, setLoadingExiting] = useState(false);
-  const [musicOn, setMusicOn] = useState(false);
-  const { guestName, openPicker } = useGuestName();
 
   useEffect(() => {
     const exitTimer = setTimeout(() => setLoadingExiting(true), LOADING_MS - 600);
@@ -63,20 +67,16 @@ function InvitationViewInner({ data }: { data: WeddingData }) {
     return () => clearTimeout(t);
   }, [phase]);
 
-  useEffect(() => {
-    if (phase === "content" && !guestName) {
-      openPicker();
-    }
-  }, [phase, guestName, openPicker]);
-
   const handleOpen = () => {
     if (phase !== "cover") return;
     setPhase("opening");
-    setMusicOn(true);
+    onStartMusic();
     setTimeout(() => setPhase("content"), OPEN_REVEAL_MS);
   };
 
   const isCoverExiting = phase === "opening" || phase === "content";
+  const music = useMusicOptional();
+  const musicLive = phase === "content" && (music?.playing ?? false);
 
   return (
     <>
@@ -92,12 +92,12 @@ function InvitationViewInner({ data }: { data: WeddingData }) {
         />
       )}
 
-      {phase === "content" && <GuestNameBar />}
+      <MusicReactiveAmbience />
 
       <main
         className={cn(
           "invitation-shell min-h-screen",
-          phase === "content" && guestName && "pt-11",
+          musicLive && "invitation-shell--live",
           phase === "content"
             ? "animate-reveal-shell"
             : "invisible fixed inset-0 opacity-0",
@@ -116,19 +116,22 @@ function InvitationViewInner({ data }: { data: WeddingData }) {
         <Footer data={data} />
       </main>
 
-      <GuestNamePicker />
-
-      {phase === "content" && data.theme.music && (
-        <MusicToggle src={data.theme.music} autoPlay={musicOn} />
-      )}
+      {phase === "content" && data.theme.music && <MusicToggle />}
     </>
   );
 }
 
 export function InvitationView({ data }: { data: WeddingData }) {
+  const [musicOn, setMusicOn] = useState(false);
+
   return (
     <GuestNameProvider>
-      <InvitationViewInner data={data} />
+      <MusicProvider src={data.theme.music} autoPlay={musicOn}>
+        <InvitationViewInner
+          data={data}
+          onStartMusic={() => setMusicOn(true)}
+        />
+      </MusicProvider>
     </GuestNameProvider>
   );
 }

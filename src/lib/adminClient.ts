@@ -1,0 +1,19 @@
+const ADMIN_KEY = "wedding-admin-key";
+
+export function getStoredAdminKey(): string | null {
+  if (typeof window === "undefined") return null;
+  return sessionStorage.getItem(ADMIN_KEY);
+}
+
+export function setStoredAdminKey(key: string): void {
+  sessionStorage.setItem(ADMIN_KEY, key);
+}
+
+export function clearStoredAdminKey(): void {
+  sessionStorage.removeItem(ADMIN_KEY);
+}
+
+export function adminHeaders(): HeadersInit {
+  const key = getStoredAdminKey();
+  return key ? { "x-admin-key": key, "Content-Type": "application/json" } : {};
+}

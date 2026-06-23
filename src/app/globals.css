@@ -36,6 +36,22 @@
 
   .invitation-shell {
     @apply mx-auto w-full min-w-0 max-w-[640px] overflow-x-hidden bg-cream-light shadow-lg sm:shadow-2xl;
+    transition:
+      box-shadow 0.15s ease-out,
+      filter 0.15s ease-out;
+  }
+
+  .invitation-shell--live {
+    box-shadow:
+      0 0 calc(18px + var(--music-energy, 0) * 36px)
+        rgba(201, 162, 75, calc(0.1 + var(--music-energy, 0) * 0.25)),
+      0 8px 32px rgba(58, 42, 42, 0.12);
+  }
+
+  .music-ripple {
+    transition:
+      opacity 0.12s ease-out,
+      transform 0.12s ease-out;
   }
 
   .btn-open-envelope {

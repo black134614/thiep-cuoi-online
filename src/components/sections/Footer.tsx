@@ -24,12 +24,6 @@ export function Footer({ data, className }: SectionProps) {
           </h1>
           <p className="mt-2 font-serif tracking-[0.3em] text-ink/60">Thân Mời</p>
         </RevealOnScroll>
-
-        <RevealOnScroll delay={200}>
-          <p className="mt-10 text-xs text-ink/30">
-            ♡ thiep-cuoi-online
-          </p>
-        </RevealOnScroll>
       </Container>
     </footer>
   );

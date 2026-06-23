@@ -6,9 +6,11 @@ import type { SectionProps } from "@/types/wedding";
 
 export function ReceptionInfo({ data, className }: SectionProps) {
   const { reception, schedule } = data;
-  const welcome = schedule[0];
-  const openParty = schedule.find((s) =>
-    s.activity.toLowerCase().includes("khai"),
+  const welcome = schedule.find(
+    (s) => s.main && s.activity.toLowerCase().includes("đón khách"),
+  );
+  const openParty = schedule.find(
+    (s) => s.main && s.activity.toLowerCase().includes("khai"),
   );
 
   return (

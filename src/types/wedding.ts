@@ -72,6 +72,10 @@ export interface ScheduleItem {
   time: string;
   /** Hoạt động, vd: "Đón khách" */
   activity: string;
+  /** Mốc chính thức — hiển thị nổi bật (vd: Đón khách, Khai tiệc) */
+  main?: boolean;
+  /** Thời gian ước lượng, không phải mốc cố định */
+  estimate?: boolean;
 }
 
 /** Một ảnh trong album cưới */

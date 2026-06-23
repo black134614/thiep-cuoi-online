@@ -102,8 +102,15 @@ export const weddingData: WeddingData = {
   },
 
   schedule: [
-    { time: "09:00", activity: "Đón khách" },
-    { time: "10:30", activity: "Khai tiệc" },
+    { time: "07:30", activity: "Chuẩn bị lễ tại tư gia", estimate: true },
+    { time: "08:30", activity: "Đón họ hàng hai bên", estimate: true },
+    { time: "09:00", activity: "Đón khách", main: true },
+    { time: "09:15", activity: "Lễ thành hôn", estimate: true },
+    { time: "09:45", activity: "Chụp ảnh lưu niệm", estimate: true },
+    { time: "10:15", activity: "Tiệc trà đón khách", estimate: true },
+    { time: "10:30", activity: "Khai tiệc", main: true },
+    { time: "11:30", activity: "Nâng ly chúc mừng", estimate: true },
+    { time: "12:00", activity: "Tiệc chính & tiễn khách", estimate: true },
   ],
 
   gallery: ALBUM_FILES.map((file, i) => ({

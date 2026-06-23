@@ -10,7 +10,6 @@ import {
 } from "react";
 import {
   readGuestNameFromStorage,
-  readGuestNameFromUrl,
   writeGuestNameToStorage,
 } from "@/lib/guestName";
 
@@ -18,27 +17,57 @@ interface GuestNameContextValue {
   guestName: string | null;
   setGuestName: (name: string) => void;
   clearGuestName: () => void;
-  pickerOpen: boolean;
-  openPicker: () => void;
-  closePicker: () => void;
 }
 
 const GuestNameContext = createContext<GuestNameContextValue | null>(null);
 
+async function resolveGuestFromUrl(): Promise<string | null> {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.search);
+
+  const id = params.get("id");
+  if (id) {
+    try {
+      const res = await fetch(
+        `/api/guests/resolve?id=${encodeURIComponent(id)}`,
+        { cache: "no-store" },
+      );
+      if (res.ok) {
+        const data = (await res.json()) as { name?: string };
+        return data.name?.trim() || null;
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  const to = params.get("to");
+  if (to) return decodeURIComponent(to).replace(/\s+/g, " ").trim();
+
+  return null;
+}
+
 export function GuestNameProvider({ children }: { children: React.ReactNode }) {
   const [guestName, setGuestNameState] = useState<string | null>(null);
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const fromUrl = readGuestNameFromUrl();
-    const fromStorage = readGuestNameFromStorage();
-    const initial = fromUrl ?? fromStorage;
-    if (initial) {
-      setGuestNameState(initial);
-      writeGuestNameToStorage(initial);
-    }
-    setHydrated(true);
+    let cancelled = false;
+
+    const init = async () => {
+      const fromUrl = await resolveGuestFromUrl();
+      const fromStorage = readGuestNameFromStorage();
+      const initial = fromUrl ?? fromStorage;
+      if (!cancelled && initial) {
+        setGuestNameState(initial);
+        writeGuestNameToStorage(initial);
+      }
+    };
+
+    void init();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const setGuestName = useCallback((name: string) => {
@@ -46,7 +75,6 @@ export function GuestNameProvider({ children }: { children: React.ReactNode }) {
     if (!trimmed) return;
     setGuestNameState(trimmed);
     writeGuestNameToStorage(trimmed);
-    setPickerOpen(false);
   }, []);
 
   const clearGuestName = useCallback(() => {
@@ -56,26 +84,17 @@ export function GuestNameProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const openPicker = useCallback(() => setPickerOpen(true), []);
-  const closePicker = useCallback(() => setPickerOpen(false), []);
-
   const value = useMemo(
     () => ({
       guestName,
       setGuestName,
       clearGuestName,
-      pickerOpen,
-      openPicker,
-      closePicker,
     }),
-    [guestName, setGuestName, clearGuestName, pickerOpen, openPicker, closePicker],
+    [guestName, setGuestName, clearGuestName],
   );
 
   return (
-    <GuestNameContext.Provider value={value}>
-      {children}
-      {hydrated ? null : null}
-    </GuestNameContext.Provider>
+    <GuestNameContext.Provider value={value}>{children}</GuestNameContext.Provider>
   );
 }
 
