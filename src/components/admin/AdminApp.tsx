@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminLogin } from "@/components/admin/AdminLogin";
+import { AdminRsvpList } from "@/components/admin/AdminRsvpList";
+import { AdminShell, type AdminTab } from "@/components/admin/AdminShell";
 import {
   adminHeaders,
   clearStoredAdminKey,
@@ -21,6 +23,7 @@ export interface AdminGuestRow {
 export function AdminApp() {
   const [ready, setReady] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const [tab, setTab] = useState<AdminTab>("guests");
   const [guests, setGuests] = useState<AdminGuestRow[]>([]);
   const [siteUrl, setSiteUrl] = useState("");
   const [storage, setStorage] = useState<"blob" | "file">("file");
@@ -92,13 +95,18 @@ export function AdminApp() {
   }
 
   return (
-    <AdminDashboard
-      guests={guests}
-      siteUrl={siteUrl}
-      storage={storage}
-      error={error}
-      onReload={loadGuests}
-      onLogout={handleLogout}
-    />
+    <AdminShell tab={tab} onTabChange={setTab} onLogout={handleLogout}>
+      {tab === "guests" ? (
+        <AdminDashboard
+          guests={guests}
+          siteUrl={siteUrl}
+          storage={storage}
+          error={error}
+          onReload={loadGuests}
+        />
+      ) : (
+        <AdminRsvpList />
+      )}
+    </AdminShell>
   );
 }

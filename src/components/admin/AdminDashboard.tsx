@@ -10,7 +10,6 @@ interface AdminDashboardProps {
   storage: "blob" | "file";
   error?: string;
   onReload: () => Promise<boolean>;
-  onLogout: () => void;
 }
 
 async function copyText(text: string): Promise<boolean> {
@@ -28,7 +27,6 @@ export function AdminDashboard({
   storage,
   error,
   onReload,
-  onLogout,
 }: AdminDashboardProps) {
   const [query, setQuery] = useState("");
   const [newName, setNewName] = useState("");
@@ -137,34 +135,24 @@ export function AdminDashboard({
   };
 
   return (
-    <div className="min-h-screen bg-[#e8dfd0] px-4 py-8">
-      <div className="mx-auto max-w-3xl">
-        <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="font-serif text-2xl font-semibold text-crimson">
-              Quản lý khách mời
-            </h1>
-            <p className="mt-1 text-sm text-ink/60">
-              Thêm · Sửa · Xóa · Copy link mời từng khách
-            </p>
-            <p className="mt-2 text-xs text-ink/45">
-              {siteUrl} · {guests.length} khách · lưu trữ: {storage}
-            </p>
-            {storage === "file" && (
-              <p className="mt-1 text-xs text-amber-800/80">
-                Trên Vercel: bật Blob Storage và thêm BLOB_READ_WRITE_TOKEN để lưu
-                thay đổi lâu dài.
-              </p>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={onLogout}
-            className="rounded-lg border border-ink/20 px-3 py-1.5 text-xs text-ink/60 hover:bg-white/40"
-          >
-            Đăng xuất
-          </button>
-        </header>
+    <div className="mx-auto max-w-3xl">
+      <header className="mb-6">
+        <h2 className="font-serif text-xl font-semibold text-crimson">
+          Link mời khách
+        </h2>
+        <p className="mt-1 text-sm text-ink/60">
+          Thêm · Sửa · Xóa · Copy link mời từng khách
+        </p>
+        <p className="mt-2 text-xs text-ink/45">
+          {siteUrl} · {guests.length} khách · lưu trữ: {storage}
+        </p>
+        {storage === "file" && (
+          <p className="mt-1 text-xs text-amber-800/80">
+            Trên Vercel: bật Blob Storage và thêm BLOB_READ_WRITE_TOKEN để lưu thay
+            đổi lâu dài.
+          </p>
+        )}
+      </header>
 
         {(error || message) && (
           <p className={`mb-4 text-sm ${error ? "text-red-700" : "text-crimson"}`}>
@@ -294,7 +282,6 @@ export function AdminDashboard({
             )}
           </ul>
         </div>
-      </div>
     </div>
   );
 }

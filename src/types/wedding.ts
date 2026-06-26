@@ -106,6 +106,20 @@ export interface Wish {
   createdAt: string;
 }
 
+/** Trạng thái xác nhận tham dự */
+export type RsvpStatus = "attending_1" | "attending_2" | "declined";
+
+/** Một xác nhận tham dự tiệc cưới */
+export interface RsvpRecord {
+  id: string;
+  guestId?: string;
+  guestName: string;
+  status: RsvpStatus;
+  headcount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /** Cấu hình giao diện / theme cho thiệp */
 export interface ThemeConfig {
   /** Tên mẫu, vd: "song-hy-do" */

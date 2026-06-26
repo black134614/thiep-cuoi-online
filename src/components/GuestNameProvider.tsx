@@ -9,58 +9,80 @@ import {
   useState,
 } from "react";
 import {
+  readGuestIdFromStorage,
+  readGuestIdFromUrl,
   readGuestNameFromStorage,
+  writeGuestIdToStorage,
   writeGuestNameToStorage,
 } from "@/lib/guestName";
 
 interface GuestNameContextValue {
   guestName: string | null;
+  guestId: string | null;
   setGuestName: (name: string) => void;
   clearGuestName: () => void;
 }
 
 const GuestNameContext = createContext<GuestNameContextValue | null>(null);
 
-async function resolveGuestFromUrl(): Promise<string | null> {
-  if (typeof window === "undefined") return null;
-  const params = new URLSearchParams(window.location.search);
+async function resolveGuestFromUrl(): Promise<{
+  name: string | null;
+  id: string | null;
+}> {
+  if (typeof window === "undefined") return { name: null, id: null };
 
-  const id = params.get("id");
-  if (id) {
+  const idFromUrl = readGuestIdFromUrl();
+  if (idFromUrl) {
     try {
       const res = await fetch(
-        `/api/guests/resolve?id=${encodeURIComponent(id)}`,
+        `/api/guests/resolve?id=${encodeURIComponent(idFromUrl)}`,
         { cache: "no-store" },
       );
       if (res.ok) {
-        const data = (await res.json()) as { name?: string };
-        return data.name?.trim() || null;
+        const data = (await res.json()) as { name?: string; id?: string };
+        return {
+          name: data.name?.trim() || null,
+          id: data.id?.trim() || idFromUrl,
+        };
       }
     } catch {
-      return null;
+      return { name: null, id: idFromUrl };
     }
-    return null;
+    return { name: null, id: idFromUrl };
   }
 
-  const to = params.get("to");
-  if (to) return decodeURIComponent(to).replace(/\s+/g, " ").trim();
+  const to = new URLSearchParams(window.location.search).get("to");
+  if (to) {
+    return { name: decodeURIComponent(to).replace(/\s+/g, " ").trim(), id: null };
+  }
 
-  return null;
+  return { name: null, id: null };
 }
 
 export function GuestNameProvider({ children }: { children: React.ReactNode }) {
   const [guestName, setGuestNameState] = useState<string | null>(null);
+  const [guestId, setGuestIdState] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     const init = async () => {
       const fromUrl = await resolveGuestFromUrl();
-      const fromStorage = readGuestNameFromStorage();
-      const initial = fromUrl ?? fromStorage;
-      if (!cancelled && initial) {
-        setGuestNameState(initial);
-        writeGuestNameToStorage(initial);
+      const fromStorageName = readGuestNameFromStorage();
+      const fromStorageId = readGuestIdFromStorage();
+
+      const name = fromUrl.name ?? fromStorageName;
+      const id = fromUrl.id ?? fromStorageId;
+
+      if (!cancelled) {
+        if (name) {
+          setGuestNameState(name);
+          writeGuestNameToStorage(name);
+        }
+        if (id) {
+          setGuestIdState(id);
+          writeGuestIdToStorage(id);
+        }
       }
     };
 
@@ -79,18 +101,21 @@ export function GuestNameProvider({ children }: { children: React.ReactNode }) {
 
   const clearGuestName = useCallback(() => {
     setGuestNameState(null);
+    setGuestIdState(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem("invitation-guest-name");
+      localStorage.removeItem("invitation-guest-id");
     }
   }, []);
 
   const value = useMemo(
     () => ({
       guestName,
+      guestId,
       setGuestName,
       clearGuestName,
     }),
-    [guestName, setGuestName, clearGuestName],
+    [guestName, guestId, setGuestName, clearGuestName],
   );
 
   return (

@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { getCountdown, type CountdownParts } from "@/lib/utils";
-import { generateIcs, downloadIcs } from "@/lib/calendar";
 import { MonthCalendar } from "@/components/ui/MonthCalendar";
 import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
-import { Button } from "@/components/ui/Button";
+import { RsvpConfirm } from "@/components/sections/RsvpConfirm";
 import type { SectionProps } from "@/types/wedding";
 
 const UNITS = [
@@ -29,21 +28,15 @@ export function Countdown({ data, className }: SectionProps) {
     return () => clearInterval(id);
   }, [target]);
 
-  const handleAddToCalendar = () => {
-    const ics = generateIcs(
-      `Tiệc cưới ${data.groom.shortName} & ${data.bride.shortName}`,
-      reception.date,
-      reception.address,
-    );
-    downloadIcs(ics, "tiec-cuoi.ics");
-  };
-
   const year = parseInt(reception.date.year, 10);
   const month = parseInt(reception.date.month, 10);
   const day = parseInt(reception.date.day, 10);
 
   return (
-    <section className={`section-cream px-4 py-8 text-center sm:py-14 ${className ?? ""}`}>
+    <section
+      id="rsvp"
+      className={`section-cream px-4 py-8 text-center sm:py-14 ${className ?? ""}`}
+    >
       <RevealOnScroll variant="blur-up">
         <h2 className="font-serif text-lg font-semibold tracking-wide text-crimson sm:text-2xl">
           Cùng đếm ngược
@@ -72,18 +65,10 @@ export function Countdown({ data, className }: SectionProps) {
       <RevealOnScroll variant="fade-scale" delay={150}>
         <div className="mt-6 sm:mt-8">
           <MonthCalendar year={year} month={month} highlightDay={day} />
-          <button
-            onClick={handleAddToCalendar}
-            className="mt-4 font-serif text-sm text-ink/50 underline transition hover:text-crimson"
-          >
-            Thêm vào lịch
-          </button>
         </div>
       </RevealOnScroll>
 
-      <RevealOnScroll delay={250}>
-        <Button className="mt-6">Xác nhận</Button>
-      </RevealOnScroll>
+      <RsvpConfirm data={data} />
     </section>
   );
 }
