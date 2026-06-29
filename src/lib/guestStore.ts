@@ -1,7 +1,11 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import path from "path";
-import { head, put } from "@vercel/blob";
 import { buildGuestInviteId } from "@/lib/guestInvite";
+import {
+  BlobNotConfiguredError,
+  PersistWriteError,
+  loadJsonStore,
+  saveJsonStore,
+} from "@/lib/jsonPersist";
 import { guestList as SEED_NAMES } from "@/data/guests";
 
 const BLOB_PATHNAME = "wedding-guests.json";
@@ -16,6 +20,8 @@ export interface GuestRecord {
 interface GuestStoreFile {
   guests: GuestRecord[];
 }
+
+export { BlobNotConfiguredError, PersistWriteError };
 
 function normalizeName(name: string): string {
   return name.replace(/\s+/g, " ").trim();
@@ -33,68 +39,25 @@ function sortGuests(guests: GuestRecord[]): GuestRecord[] {
   return [...guests].sort((a, b) => a.order - b.order);
 }
 
-async function readFromBlob(): Promise<GuestRecord[] | null> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return null;
-  try {
-    const meta = await head(BLOB_PATHNAME);
-    const res = await fetch(meta.url, { cache: "no-store" });
-    if (!res.ok) return null;
-    const data = (await res.json()) as GuestStoreFile;
-    return data.guests?.length ? sortGuests(data.guests) : null;
-  } catch {
-    return null;
-  }
-}
-
-async function writeToBlob(guests: GuestRecord[]): Promise<void> {
-  await put(BLOB_PATHNAME, JSON.stringify({ guests }, null, 2), {
-    access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-  });
-}
-
-function readFromFile(): GuestRecord[] | null {
-  try {
-    if (!existsSync(LOCAL_PATH)) return null;
-    const data = JSON.parse(readFileSync(LOCAL_PATH, "utf-8")) as GuestStoreFile;
-    return data.guests?.length ? sortGuests(data.guests) : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeToFile(guests: GuestRecord[]): void {
-  const dir = path.dirname(LOCAL_PATH);
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  writeFileSync(LOCAL_PATH, JSON.stringify({ guests }, null, 2), "utf-8");
-}
-
 export async function loadGuests(): Promise<GuestRecord[]> {
-  const fromBlob = await readFromBlob();
-  if (fromBlob?.length) return fromBlob;
+  const data = await loadJsonStore<GuestStoreFile>(BLOB_PATHNAME, LOCAL_PATH);
 
-  const fromFile = readFromFile();
-  if (fromFile?.length) return fromFile;
+  if (data?.guests?.length) {
+    return sortGuests(data.guests);
+  }
 
   const seed = buildSeedGuests();
-  await saveGuests(seed);
+  try {
+    await saveJsonStore(BLOB_PATHNAME, LOCAL_PATH, { guests: seed });
+  } catch {
+    // Seed vẫn trả về để đọc; ghi sẽ báo lỗi khi admin thao tác
+  }
   return seed;
 }
 
-export async function saveGuests(guests: GuestRecord[]): Promise<void> {
+export async function saveGuests(guests: GuestRecord[]): Promise<"blob" | "file"> {
   const sorted = sortGuests(guests);
-
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    await writeToBlob(sorted);
-  }
-
-  try {
-    writeToFile(sorted);
-  } catch {
-    // Read-only filesystem (e.g. Vercel without local write)
-  }
+  return saveJsonStore(BLOB_PATHNAME, LOCAL_PATH, { guests: sorted });
 }
 
 export function resolveGuestFromList(

@@ -20,13 +20,16 @@ export interface AdminGuestRow {
   url: string;
 }
 
+export type StorageMode = "blob" | "file" | "readonly";
+
 export function AdminApp() {
   const [ready, setReady] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [tab, setTab] = useState<AdminTab>("guests");
   const [guests, setGuests] = useState<AdminGuestRow[]>([]);
   const [siteUrl, setSiteUrl] = useState("");
-  const [storage, setStorage] = useState<"blob" | "file">("file");
+  const [storage, setStorage] = useState<StorageMode>("file");
+  const [writable, setWritable] = useState(true);
   const [error, setError] = useState("");
 
   const loadGuests = useCallback(async () => {
@@ -47,6 +50,7 @@ export function AdminApp() {
     setGuests(data.guests);
     setSiteUrl(data.siteUrl);
     setStorage(data.storage);
+    setWritable(data.writable !== false);
     setAuthenticated(true);
     setError("");
     return true;
@@ -101,6 +105,7 @@ export function AdminApp() {
           guests={guests}
           siteUrl={siteUrl}
           storage={storage}
+          writable={writable}
           error={error}
           onReload={loadGuests}
         />

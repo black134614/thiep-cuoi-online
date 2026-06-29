@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { RsvpStatus } from "@/types/wedding";
+import { toPersistErrorResponse } from "@/lib/jsonPersist";
 import {
   findRsvpByGuestKey,
   loadRsvpResponses,
@@ -51,7 +52,8 @@ export async function POST(request: Request) {
       status,
     });
     return NextResponse.json({ rsvp: record }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Không lưu được xác nhận." }, { status: 500 });
+  } catch (err) {
+    const { status, error } = toPersistErrorResponse(err);
+    return NextResponse.json({ error }, { status });
   }
 }

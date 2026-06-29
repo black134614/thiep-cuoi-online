@@ -1,7 +1,9 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import path from "path";
-import { head, put } from "@vercel/blob";
 import type { RsvpRecord, RsvpStatus } from "@/types/wedding";
+import {
+  loadJsonStore,
+  saveJsonStore,
+} from "@/lib/jsonPersist";
 import { shortId } from "@/lib/utils";
 
 const BLOB_PATHNAME = "wedding-rsvp.json";
@@ -11,63 +13,13 @@ interface RsvpStoreFile {
   responses: RsvpRecord[];
 }
 
-async function readFromBlob(): Promise<RsvpRecord[] | null> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return null;
-  try {
-    const meta = await head(BLOB_PATHNAME);
-    const res = await fetch(meta.url, { cache: "no-store" });
-    if (!res.ok) return null;
-    const data = (await res.json()) as RsvpStoreFile;
-    return data.responses ?? null;
-  } catch {
-    return null;
-  }
-}
-
-async function writeToBlob(responses: RsvpRecord[]): Promise<void> {
-  await put(BLOB_PATHNAME, JSON.stringify({ responses }, null, 2), {
-    access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-  });
-}
-
-function readFromFile(): RsvpRecord[] | null {
-  try {
-    if (!existsSync(LOCAL_PATH)) return null;
-    const data = JSON.parse(readFileSync(LOCAL_PATH, "utf-8")) as RsvpStoreFile;
-    return data.responses ?? null;
-  } catch {
-    return null;
-  }
-}
-
-function writeToFile(responses: RsvpRecord[]): void {
-  const dir = path.dirname(LOCAL_PATH);
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  writeFileSync(LOCAL_PATH, JSON.stringify({ responses }, null, 2), "utf-8");
-}
-
 export async function loadRsvpResponses(): Promise<RsvpRecord[]> {
-  const fromBlob = await readFromBlob();
-  if (fromBlob) return fromBlob;
-
-  const fromFile = readFromFile();
-  if (fromFile) return fromFile;
-
-  return [];
+  const data = await loadJsonStore<RsvpStoreFile>(BLOB_PATHNAME, LOCAL_PATH);
+  return data?.responses ?? [];
 }
 
 export async function saveRsvpResponses(responses: RsvpRecord[]): Promise<void> {
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    await writeToBlob(responses);
-  }
-  try {
-    writeToFile(responses);
-  } catch {
-    // Read-only filesystem on Vercel
-  }
+  await saveJsonStore(BLOB_PATHNAME, LOCAL_PATH, { responses });
 }
 
 export function headcountForStatus(status: RsvpStatus): number {

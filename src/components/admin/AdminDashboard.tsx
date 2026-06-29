@@ -1,13 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { AdminGuestRow } from "@/components/admin/AdminApp";
+import type { AdminGuestRow, StorageMode } from "@/components/admin/AdminApp";
+import { BLOB_SETUP_MESSAGE } from "@/lib/persistMessages";
 import { adminHeaders } from "@/lib/adminClient";
 
 interface AdminDashboardProps {
   guests: AdminGuestRow[];
   siteUrl: string;
-  storage: "blob" | "file";
+  storage: StorageMode;
+  writable: boolean;
   error?: string;
   onReload: () => Promise<boolean>;
 }
@@ -25,6 +27,7 @@ export function AdminDashboard({
   guests,
   siteUrl,
   storage,
+  writable,
   error,
   onReload,
 }: AdminDashboardProps) {
@@ -78,7 +81,11 @@ export function AdminDashboard({
     const data = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) {
-      notify(data.error ?? "Không thêm được khách.");
+      const data = await res.json().catch(() => ({}));
+      notify(
+        data.error ??
+          `Lỗi ${res.status}: không thêm được khách. Kiểm tra Vercel Blob đã Connect chưa.`,
+      );
       return;
     }
     setNewName("");
@@ -146,11 +153,11 @@ export function AdminDashboard({
         <p className="mt-2 text-xs text-ink/45">
           {siteUrl} · {guests.length} khách · lưu trữ: {storage}
         </p>
-        {storage === "file" && (
-          <p className="mt-1 text-xs text-amber-800/80">
-            Trên Vercel: bật Blob Storage và thêm BLOB_READ_WRITE_TOKEN để lưu thay
-            đổi lâu dài.
-          </p>
+        {!writable && (
+          <div className="mt-3 rounded-lg border border-amber-500/50 bg-amber-50 px-3 py-2.5 text-left text-xs leading-relaxed text-amber-950">
+            <strong className="block font-semibold">Không thể lưu thay đổi trên Vercel</strong>
+            {BLOB_SETUP_MESSAGE}
+          </div>
         )}
       </header>
 
@@ -178,7 +185,7 @@ export function AdminDashboard({
           </div>
           <button
             type="submit"
-            disabled={busy || !newName.trim()}
+            disabled={busy || !newName.trim() || !writable}
             className="rounded-lg bg-wine px-5 py-2.5 text-sm text-cream-light disabled:opacity-50"
           >
             Thêm
