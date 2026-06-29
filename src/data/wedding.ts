@@ -9,35 +9,17 @@ const MAP_EMBED_URL =
 const MAP_OPEN_URL =
   "https://www.google.com/maps/search/?api=1&query=11.397720471922826,105.94639148713959";
 
+const HERO_PHOTO = "/images/Album/DSC01892.jpg";
+
+/** Album trượt — không gồm ảnh hero */
 const ALBUM_FILES = [
-  "DSC01851.jpg",
-  "DSC01892.jpg",
-  "DSC01912.jpg",
-  "DSC01917.jpg",
-  "DSC01941.jpg",
-  "DSC01946.jpg",
   "DSC02077.jpg",
   "DSC02095.jpg",
-  "DSC02130.jpg",
-  "DSC02172.jpg",
-  "DSC02186.jpg",
-  "DSC02221.jpg",
-  "DSC02234.jpg",
   "DSC02256.jpg",
-  "DSC02265.jpg",
-  "DSC02267_(2).jpg",
-  "DSC02305.jpg",
-  "DSC02341.jpg",
   "DSC02345.jpg",
-  "DSC02367.jpg",
   "DSC02380.jpg",
   "DSC02415.jpg",
-  "DSC02421.jpg",
-  "DSC02531.jpg",
-  "DSC02557.jpg",
 ] as const;
-
-const HERO_PHOTO = `/images/Album/${ALBUM_FILES[0]}`;
 
 export const weddingData: WeddingData = {
   welcomeText: "Welcome to our wedding",
