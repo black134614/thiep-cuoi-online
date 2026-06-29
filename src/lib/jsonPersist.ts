@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
+import { BLOB_SETUP_MESSAGE } from "@/lib/persistMessages";
 
 export class BlobNotConfiguredError extends Error {
   constructor() {
@@ -46,22 +47,19 @@ async function loadBlobModule() {
 }
 
 async function readJsonFromBlob<T>(pathname: string): Promise<T | null> {
-  if (!hasBlobStorage()) return null;
+  const token = getBlobToken();
+  if (!token) return null;
 
   try {
-    const { list } = await loadBlobModule();
-    const { blobs } = await list({
-      prefix: pathname,
-      limit: 1,
-      token: getBlobToken(),
+    const { get } = await loadBlobModule();
+    const result = await get(pathname, {
+      access: "private",
+      token,
+      useCache: false,
     });
-
-    const blob = blobs.find((b) => b.pathname === pathname) ?? blobs[0];
-    if (!blob?.url) return null;
-
-    const res = await fetch(blob.url, { cache: "no-store" });
-    if (!res.ok) return null;
-    return (await res.json()) as T;
+    if (!result || result.statusCode !== 200 || !result.stream) return null;
+    const text = await new Response(result.stream).text();
+    return JSON.parse(text) as T;
   } catch {
     return null;
   }
@@ -76,7 +74,7 @@ async function writeJsonToBlob<T>(pathname: string, data: T): Promise<void> {
   try {
     const { put } = await loadBlobModule();
     await put(pathname, JSON.stringify(data, null, 2), {
-      access: "public",
+      access: "private",
       allowOverwrite: true,
       addRandomSuffix: false,
       contentType: "application/json",
@@ -153,7 +151,7 @@ export function toPersistErrorResponse(err: unknown): {
   if (err instanceof PersistWriteError) {
     return {
       status: 500,
-      error: `Không lưu được dữ liệu (${message}). Kiểm tra Vercel Blob Store đã Connect đúng project và Redeploy.`,
+      error: `Không lưu được dữ liệu (${message}).`,
     };
   }
 
@@ -163,4 +161,4 @@ export function toPersistErrorResponse(err: unknown): {
   };
 }
 
-import { BLOB_SETUP_MESSAGE } from "@/lib/persistMessages";
+export { BLOB_SETUP_MESSAGE };
